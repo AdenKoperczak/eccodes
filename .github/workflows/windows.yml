@@ -26,7 +26,7 @@ jobs:
       fail-fast: false
 
   env:
-    ECBUILD_SRC: "C:\ECBUILD"
+    ECBUILD_SRC: "C:\\ECBUILD"
   name: Windows Build
   runs-on: windows-2022
 
