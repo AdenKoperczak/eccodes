@@ -92,23 +92,22 @@ jobs:
         set CL /MP
         nmake
 
-    - name: Test eccodes
-      shell: pwsh
-      run: |
-        cd build
-        $env:Path += ";${{ github.workspace }}/build/bin"
-        echo $env:Path
-        ctest -j4 --output-on-failure
 
     - name: Install eccodes
       shell: pwsh
       run: |
         cd build
         nmake install
-        codes_info
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
       with:
         name: eccodes
         path: ${{ github.workspace }}/eccodes-install
+
+    - name: Test eccodes
+      shell: pwsh
+      run: |
+        cd build
+        $env:Path += ";${{ github.workspace }}/build/bin"
+        ctest -j4 --output-on-failure
