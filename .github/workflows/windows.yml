@@ -25,9 +25,9 @@ jobs:
     strategy:
       fail-fast: false
 
+  name: Windows Build
   env:
     ECBUILD_SRC: "C:\\ECBUILD"
-  name: Windows Build
   runs-on: windows-2022
 
   steps:
