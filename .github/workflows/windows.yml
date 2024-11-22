@@ -89,7 +89,7 @@ jobs:
           -D ENABLE_EXTRA_TESTS=ON `
           -D WINDOWS_TESTING_BASHRC=%WINDOWS_TESTING_BASHRC% `
           ../source/
-        nmake -j4
+        nmake
 
     - name: Test eccodes
       shell: pwsh
