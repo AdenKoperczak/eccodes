@@ -96,9 +96,8 @@ jobs:
       shell: pwsh
       run: |
         cd build
-        set PATH ($PATH + ";${{ github.workspace }}/build/bin")
-        echo $PATH
-        dir "${{ github.workspace }}/build/bin"
+        $env:Path += ";${{ github.workspace }}/build/bin"
+        echo $env:Path
         ctest -j4 --output-on-failure
 
     - name: Install eccodes
