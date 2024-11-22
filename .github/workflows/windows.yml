@@ -89,6 +89,7 @@ jobs:
           -D ENABLE_EXTRA_TESTS=ON `
           -D WINDOWS_TESTING_BASHRC=%WINDOWS_TESTING_BASHRC% `
           ../source/
+        set CL /MP
         nmake
 
     - name: Test eccodes
