@@ -42,7 +42,7 @@ jobs:
       shell: pwsh
       run: |
         git config --global core.symlinks true
-        $ $CONDA\Scripts\activate.bat
+        . ($CONDA + "\Scripts\activate.ps1")
         conda config --set always_yes yes
 
     - name: Checkout eccodes
@@ -59,7 +59,7 @@ jobs:
     - name: Install Conda Packages
       shell: pwsh
       run: |
-        $ $CONDA\Scripts\activate.bat
+        . ($CONDA + "\Scripts\activate.ps1"
         conda install -c msys2 m2-bash ^ m2-findutils ^ m2-coreutils ^ m2-grep ^ m2-sed ^ m2-gawk ^ m2-diffutils ^ m2-perl ^ m2w64-ntldd-git
         conda install -c conda-forge cmake libaec
 
@@ -71,7 +71,7 @@ jobs:
     - name: Build eccodes
       shell: pwsh
       run: |
-        $ $CONDA\Scripts\activate.bat
+        . ($CONDA + "\Scripts\activate.ps1")
         mkdir build
         cd build
         cmake ../source/ -G "NMake Makefiles" `
@@ -91,12 +91,14 @@ jobs:
     - name: Test eccodes
       shell: pwsh
       run: |
+        . ($CONDA + "\Scripts\activate.ps1")
         cd build
         ctest --output-on-failure
 
     - name: Install eccodes
       shell: pwsh
       run: |
+        . ($CONDA + "\Scripts\activate.ps1")
         cd build
         nmake install
         codes_info
