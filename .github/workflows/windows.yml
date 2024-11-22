@@ -67,9 +67,10 @@ jobs:
         conda install -c conda-forge cmake libaec
 
     - name: Setup MSVC
-      shell: cmd
-      run: |
-        call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
+      uses: ilammy/msvc-dev-cmd@v1
+      with:
+        arch: x64
+        vsversion: 2022
 
     - name: Build eccodes
       shell: pwsh
