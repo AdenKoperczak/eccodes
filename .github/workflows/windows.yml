@@ -34,7 +34,7 @@ jobs:
 
     name: Windows Build
     env:
-      ECBUILD_SRC: "C:\\ECBUILD"
+      ECBUILD_SRC: ${{ github.workspace }}/ECBUILD
     runs-on: windows-2022
 
     steps:
@@ -96,6 +96,7 @@ jobs:
       shell: pwsh
       run: |
         cd build
+        set PATH ($PATH + ";${{ github.workspace }}/build/bin")
         ctest -j4 --output-on-failure
 
     - name: Install eccodes
