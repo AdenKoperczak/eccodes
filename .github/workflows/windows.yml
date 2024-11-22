@@ -21,7 +21,6 @@
 # codes_info
 
 on:
-  workflow_dispatch:
   push:
     - "**"
 
