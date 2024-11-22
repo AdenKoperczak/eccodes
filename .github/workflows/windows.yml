@@ -25,75 +25,75 @@ jobs:
     strategy:
       fail-fast: false
 
-  name: Windows Build
-  env:
-    ECBUILD_SRC: "C:\\ECBUILD"
-  runs-on: windows-2022
+    name: Windows Build
+    env:
+      ECBUILD_SRC: "C:\\ECBUILD"
+    runs-on: windows-2022
 
-  steps:
-  - name: Configer
-    shell: pwsh
-    run: |
-      git config --global core.symlinks true
-      call $CONDA\Scripts\activate.bat
-      conda config --set always_yes yes
+    steps:
+    - name: Configer
+      shell: pwsh
+      run: |
+        git config --global core.symlinks true
+        call $CONDA\Scripts\activate.bat
+        conda config --set always_yes yes
 
-  - name: Checkout eccodes
-    uses: actions/checkout@v4
-    with:
-      path: source
-      depth: 1
+    - name: Checkout eccodes
+      uses: actions/checkout@v4
+      with:
+        path: source
+        depth: 1
 
-  - name: Checkout ecbuild
-    shell: pwsh
-    run: |
-      git clone --depth 1 https://github.com/ecmwf/ecbuild.git $ECBUILD_SRC
+    - name: Checkout ecbuild
+      shell: pwsh
+      run: |
+        git clone --depth 1 https://github.com/ecmwf/ecbuild.git $ECBUILD_SRC
 
-  - name: Install Conda Packages
-    shell: pwsh
-    run: |
-      conda install -c msys2 m2-bash ^ m2-findutils ^ m2-coreutils ^ m2-grep ^ m2-sed ^ m2-gawk ^ m2-diffutils ^ m2-perl ^ m2w64-ntldd-git
-      conda install -c conda-forge cmake libaec
+    - name: Install Conda Packages
+      shell: pwsh
+      run: |
+        conda install -c msys2 m2-bash ^ m2-findutils ^ m2-coreutils ^ m2-grep ^ m2-sed ^ m2-gawk ^ m2-diffutils ^ m2-perl ^ m2w64-ntldd-git
+        conda install -c conda-forge cmake libaec
 
-  - name: Setup MSVC
-    shell: pwsh
-    run: |
-      call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
+    - name: Setup MSVC
+      shell: pwsh
+      run: |
+        call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
 
-  - name: Build eccodes
-    shell: pwsh
-    run: |
-      mkdir build
-      cd build
-      cmake ../source/ -G "NMake Makefiles" `
-        -D CMAKE_INSTALL_PREFIX="${{ github.workspace }}/eccodes-install" `
-        -D CMAKE_BUILD_TYPE=Release `
-        -D ENABLE_FORTRAN=0 `
-        -D ENABLE_NETCDF=0 `
-        -D ENABLE_JPG=1 `
-        -D ENABLE_AEC=0 `
-        -D IEEE_LE=1 `
-        -D ENABLE_MEMFS=1 `
-        -D ENABLE_EXTRA_TESTS=ON `
-        -D WINDOWS_TESTING_BASHRC=%WINDOWS_TESTING_BASHRC% `
-        ../source/
-      nmake
+    - name: Build eccodes
+      shell: pwsh
+      run: |
+        mkdir build
+        cd build
+        cmake ../source/ -G "NMake Makefiles" `
+          -D CMAKE_INSTALL_PREFIX="${{ github.workspace }}/eccodes-install" `
+          -D CMAKE_BUILD_TYPE=Release `
+          -D ENABLE_FORTRAN=0 `
+          -D ENABLE_NETCDF=0 `
+          -D ENABLE_JPG=1 `
+          -D ENABLE_AEC=0 `
+          -D IEEE_LE=1 `
+          -D ENABLE_MEMFS=1 `
+          -D ENABLE_EXTRA_TESTS=ON `
+          -D WINDOWS_TESTING_BASHRC=%WINDOWS_TESTING_BASHRC% `
+          ../source/
+        nmake
 
-  - name: Test eccodes
-    shell: pwsh
-    run: |
-      cd build
-      ctest --output-on-failure
+    - name: Test eccodes
+      shell: pwsh
+      run: |
+        cd build
+        ctest --output-on-failure
 
-  - name: Install eccodes
-    shell: pwsh
-    run: |
-      cd build
-      nmake install
-      codes_info
+    - name: Install eccodes
+      shell: pwsh
+      run: |
+        cd build
+        nmake install
+        codes_info
 
-  - name: Upload Artifacts
-    uses: actions/upload-artifact@v4
-    with:
-      name: eccodes
-      path: ${{ github.workspace }}/eccodes-install
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: eccodes
+        path: ${{ github.workspace }}/eccodes-install
