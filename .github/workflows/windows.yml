@@ -39,10 +39,10 @@ jobs:
 
     steps:
     - name: Configer
-      shell: pwsh
+      shell: cmd
       run: |
         git config --global core.symlinks true
-        call $CONDA\Scripts\activate.bat
+        call %CONDA%\Scripts\activate.bat
         conda config --set always_yes yes
 
     - name: Checkout eccodes
@@ -52,9 +52,9 @@ jobs:
         depth: 1
 
     - name: Checkout ecbuild
-      shell: pwsh
+      shell: cmd
       run: |
-        git clone --depth 1 https://github.com/ecmwf/ecbuild.git $ECBUILD_SRC
+        git clone --depth 1 https://github.com/ecmwf/ecbuild.git %ECBUILD_SRC%
 
     - name: Install Conda Packages
       shell: pwsh
