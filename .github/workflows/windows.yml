@@ -43,7 +43,7 @@ jobs:
       with:
         auto-update-conda: true
         python-version: "3.11"
-    - name: Configer
+    - name: Configure
       shell: pwsh
       run: |
         git config --global core.symlinks true
