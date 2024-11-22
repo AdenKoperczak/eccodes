@@ -20,6 +20,11 @@
 # nmake install
 # codes_info
 
+on:
+  workflow_dispatch:
+  push:
+    - "**"
+
 jobs:
   build:
     strategy:
