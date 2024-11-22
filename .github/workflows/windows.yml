@@ -89,13 +89,13 @@ jobs:
           -D ENABLE_EXTRA_TESTS=ON `
           -D WINDOWS_TESTING_BASHRC=%WINDOWS_TESTING_BASHRC% `
           ../source/
-        nmake
+        nmake -j4
 
     - name: Test eccodes
       shell: pwsh
       run: |
         cd build
-        ctest --output-on-failure
+        ctest -j4 --output-on-failure
 
     - name: Install eccodes
       shell: pwsh
