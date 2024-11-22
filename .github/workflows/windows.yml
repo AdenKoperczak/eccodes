@@ -1,0 +1,99 @@
+
+# On Windows
+# 
+# Commands
+# git config --global core.symlinks true
+# call %CONDA%\Scripts\activate.bat
+# set PATH=%PATH%;%ECCODES_SRC%\build\bin
+# conda config --set always_yes yes
+# git clone -q --depth=1 --branch=master https://github.com/ecmwf/eccodes.git c:\ecmwf\git\eccodes
+# git checkout -qf 70567a4746b8f11a9f790a643a5def597cbba95b
+# git clone --depth 1 https://github.com/ecmwf/ecbuild.git %ECBUILD_SRC% --branch %APPVEYOR_REPO_BRANCH%
+# conda install -c msys2 m2-bash ^ m2-findutils ^ m2-coreutils ^ m2-grep ^ m2-sed ^ m2-gawk ^ m2-diffutils ^ m2-perl ^ m2w64-ntldd-git
+# conda install -c conda-forge cmake libaec
+# call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
+# cd %ECCODES_SRC%
+# mkdir build && cd build
+# cmake -G "NMake Makefiles" ^ -D CMAKE_INSTALL_PREFIX=%INSTALL_DIR% ^ -D CMAKE_BUILD_TYPE=Release ^ -D ENABLE_FORTRAN=0 ^ -D ENABLE_NETCDF=0 ^ -D ENABLE_JPG=1 ^ -D ENABLE_AEC=0 ^ -D IEEE_LE=1 ^ -D ENABLE_MEMFS=1 ^ -D ENABLE_EXTRA_TESTS=ON ^ -D WINDOWS_TESTING_BASHRC=%WINDOWS_TESTING_BASHRC% ^ ..
+# nmake
+# ctest --output-on-failure
+# nmake install
+# codes_info
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+
+  env:
+    ECBUILD_SRC: "C:\ECBUILD"
+  name: Windows Build
+  runs-on: windows-2022
+
+  steps:
+  - name: Configer
+    shell: pwsh
+    run: |
+      git config --global core.symlinks true
+      call $CONDA\Scripts\activate.bat
+      conda config --set always_yes yes
+
+  - name: Checkout eccodes
+    uses: actions/checkout@v4
+    with:
+      path: source
+      depth: 1
+
+  - name: Checkout ecbuild
+    shell: pwsh
+    run: |
+      git clone --depth 1 https://github.com/ecmwf/ecbuild.git $ECBUILD_SRC
+
+  - name: Install Conda Packages
+    shell: pwsh
+    run: |
+      conda install -c msys2 m2-bash ^ m2-findutils ^ m2-coreutils ^ m2-grep ^ m2-sed ^ m2-gawk ^ m2-diffutils ^ m2-perl ^ m2w64-ntldd-git
+      conda install -c conda-forge cmake libaec
+
+  - name: Setup MSVC
+    shell: pwsh
+    run: |
+      call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
+
+  - name: Build eccodes
+    shell: pwsh
+    run: |
+      mkdir build
+      cd build
+      cmake ../source/ -G "NMake Makefiles" `
+        -D CMAKE_INSTALL_PREFIX="${{ github.workspace }}/eccodes-install" `
+        -D CMAKE_BUILD_TYPE=Release `
+        -D ENABLE_FORTRAN=0 `
+        -D ENABLE_NETCDF=0 `
+        -D ENABLE_JPG=1 `
+        -D ENABLE_AEC=0 `
+        -D IEEE_LE=1 `
+        -D ENABLE_MEMFS=1 `
+        -D ENABLE_EXTRA_TESTS=ON `
+        -D WINDOWS_TESTING_BASHRC=%WINDOWS_TESTING_BASHRC% `
+        ../source/
+      nmake
+
+  - name: Test eccodes
+    shell: pwsh
+    run: |
+      cd build
+      ctest --output-on-failure
+
+  - name: Install eccodes
+    shell: pwsh
+    run: |
+      cd build
+      nmake install
+      codes_info
+
+  - name: Upload Artifacts
+    uses: actions/upload-artifact@v4
+    with:
+      name: eccodes
+      path: ${{ github.workspace }}/eccodes-install
